@@ -1,6 +1,8 @@
 const mongoose = require('mongoose');
 const validator = require('validator');
+const bcryptjs = require('bcryptjs');
 
+// Aqui criamos a parte de login no nosso banco de dados
 const LoginSchema = new mongoose.Schema({
     email: { type: String, required: true },
     password: { type: String, required: true },
@@ -24,12 +26,29 @@ class Login {
         this.valid();
         if (this.errors.length > 0) return;
 
+        // Aqui chamamos o metodo para verificar se o usuário já existe na base de dados.
+        await this.userExists();
+        if (this.errors.length > 0) return;
+
+        // Aqui fazemos um hash da senha, garantindo uma segurança maior para o nosso usuário.
+        const salt = bcryptjs.genSaltSync();
+        this.body.password = bcryptjs.hashSync(this.body.password, salt);
+
         // Aqui criamos o usuários com as informações obtidas do formulário.
         try {
+
             this.user = await LoginModel.create(this.body)
         } catch (e) {
             console.log(e)
         }
+    }
+
+    // Aqui verificamos na base de dados 
+    async userExists() {
+        // Aqui verificamos um registro na base de dados se o e-mail que está sendo enviado já existe.
+        const user = await LoginModel.findOne({ email: this.body.email })
+
+        if (user) this.errors.push('Usuário já cadastrado.')
     }
 
     valid() {
@@ -41,7 +60,7 @@ class Login {
         if (!validator.isEmail(this.body.email)) this.errors.push('E-mail inválido')
 
         // A senha precisa ter no minimo 5 caracteres. Aqui fazemos uma validação através do tamanho.
-        if (this.body.password.length <= 5) {
+        if (this.body.password.length < 5) {
             this.errors.push('A senha precisa ter no mínimo 5 caracteres')
         }
     }

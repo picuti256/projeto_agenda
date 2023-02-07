@@ -5,20 +5,27 @@ exports.index = (req, res) => {
 }
 
 exports.register = async (req, res) => {
-    // Aqui chamamos o metodo construtor enviando a nossa requisição
-    const login = new Login(req.body);
-    // aqui chamamos a função de registro feito no nosso model
-    await login.register();
 
-    // Aqui enviamos os erros que apareceram ao nosso usuário. Se
-    if(login.errors.length > 0) {
-        req.flash('errors', login.errors);
+    try {
+        // Aqui chamamos o metodo construtor enviando a nossa requisição
+        const login = new Login(req.body);
+        // aqui chamamos a função de registro feito no nosso model
+        await login.register();
+
+        // Aqui enviamos os erros que apareceram ao nosso usuário. Se for digitado um e-mail invalido ou se a senha não for compativel, será enviado uma flash message.
+        if (login.errors.length > 0) {
+            req.flash('errors', login.errors);
+            req.session.save(() => {
+                return res.redirect('/login/')
+            });
+            return
+        }
+        req.flash('success', 'Seu usuário foi criado com sucesso!');
         req.session.save(() => {
-            res.redirect('/login/')
+            return res.redirect('/login/')
         });
-
-        return
+    } catch (e) {
+        console.log(e)
+        return res.render('404')
     }
-
-    res.send(login.errors);
 }
