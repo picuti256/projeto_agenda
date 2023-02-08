@@ -21,6 +21,23 @@ class Login {
         this.user = null;
     }
 
+    async login() {
+        this.valid();
+        if (this.errors.length > 0) return;
+        this.user = await LoginModel.findOne({ email: this.body.email });
+        if (!this.user) {
+            this.errors.push('Usuário invalido.')
+            return;
+        };
+
+        // Aqui usamos o bcrypt para comparar a senha, tendo em vista que ela está em harsh
+        if (!bcryptjs.compareSync(this.body.password, this.user.password)) {
+            this.errors.push('Senha invalida.');
+            this.user = null;
+            return
+        }
+    }
+
     // Aqui fazemos a função ser assincrona pois irá fazer conexão com a base de dados.
     async register() {
         this.valid();
@@ -35,20 +52,14 @@ class Login {
         this.body.password = bcryptjs.hashSync(this.body.password, salt);
 
         // Aqui criamos o usuários com as informações obtidas do formulário.
-        try {
-
-            this.user = await LoginModel.create(this.body)
-        } catch (e) {
-            console.log(e)
-        }
+        this.user = await LoginModel.create(this.body)
     }
 
     // Aqui verificamos na base de dados 
     async userExists() {
         // Aqui verificamos um registro na base de dados se o e-mail que está sendo enviado já existe.
-        const user = await LoginModel.findOne({ email: this.body.email })
-
-        if (user) this.errors.push('Usuário já cadastrado.')
+        this.user = await LoginModel.findOne({ email: this.body.email })
+        if (this.user) this.errors.push('Usuário já cadastrado.')
     }
 
     valid() {
