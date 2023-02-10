@@ -21,11 +21,10 @@ const flash = require('connect-flash'); // Mensagens rápidas salvas em sessões
 
 const routes = require('./routes'); //Importação dos routes
 const path = require('path'); // Importação do Path
-const helmet = require('helmet'); // Segurança 
+// const helmet = require('helmet'); // Segurança 
 const csrf = require('csurf'); // csrf tokens (segurança).
 const { middlewareGlobal, checkCsrfError, csrfMiddleware } = require('./src/middlewares/middleware'); //importação do middleware (Middleware são funções que são executadas na rota)
-
-app.use(helmet());
+// app.use(helmet());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
