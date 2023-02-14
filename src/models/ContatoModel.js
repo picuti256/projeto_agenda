@@ -19,11 +19,11 @@ function Contato(body) {
     this.contato = null;
 };
 
-Contato.buscaPorId = async function(id) {
-    if(typeof id !== 'string') return;
-    const user = await ContatoModel.findById(id);
-    return user;
-}
+Contato.buscaPorId = async function (id) {
+    if (typeof id !== 'string') return;
+    const contato = await ContatoModel.findById(id);
+    return contato;
+};
 
 Contato.prototype.register = async function () {
     // Aqui novamente fazemos a verificação do contato antes de cadastrar ele.
@@ -35,7 +35,7 @@ Contato.prototype.register = async function () {
     this.contato = await ContatoModel.create(this.body);
 };
 
-Contato.prototype.valid = function() {
+Contato.prototype.valid = function () {
     // Aqui chamamos a função para limpar o formulário 
     this.cleanUp();
     // validação de cadastro
@@ -68,10 +68,10 @@ Contato.prototype.cleanUp = function () {
 };
 
 Contato.prototype.edit = async function (id) {
-    if(typeof id !== 'string') return;
+    if (typeof id !== 'string') return;
     this.valid();
-    if(this.errors.length > 0) return;
-    this.contato = await ContatoModel.findByIdAndUpdate(id, this.body, { new: true});
+    if (this.errors.length > 0) return;
+    this.contato = await ContatoModel.findByIdAndUpdate(id, this.body, { new: true });
 }
 
 module.exports = Contato;
