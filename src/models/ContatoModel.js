@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const Db = require('mongodb')
 const validator = require('validator')
 
 const ContatoSchema = new mongoose.Schema({
@@ -71,7 +72,7 @@ Contato.prototype.edit = async function (id) {
     if (typeof id !== 'string') return;
     this.valid();
     if (this.errors.length > 0) return;
-    this.contato = await ContatoModel.findByIdAndUpdate(id, this.body, { new: true });
-}
+    this.contato = await ContatoModel.findByIdAndUpdate(id.trim(), this.body, { new: true });
+};
 
 module.exports = Contato;
