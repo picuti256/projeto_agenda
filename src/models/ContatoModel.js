@@ -1,5 +1,4 @@
 const mongoose = require('mongoose');
-const Db = require('mongodb')
 const validator = require('validator')
 
 const ContatoSchema = new mongoose.Schema({
